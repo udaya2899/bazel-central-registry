@@ -1,14 +1,34 @@
---- BUILD.bazel
+diff --git BUILD.bazel BUILD.bazel
+new file mode 100644
+index 00000000..a1e2f11a
+--- /dev/null
 +++ BUILD.bazel
-@@ -0,0 +1,10 @@
-+cc_library(
+@@ -0,0 +1,27 @@
++load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
++
++filegroup(
++    name = "srcs",
++    srcs = glob(["**"]),
++)
++cmake(
 +    name = "open62541",
-+    srcs = glob["src/**"],
-+    hdrs = glob([
-+        "include/open62541/*.h",
-+        "include/open62541/plugin/*.h",
-+    ]),
-+    strip_include_prefix = "include",
-+    visibility = ["//visibility:public"],
++    build_args = [
++        "-j4",
++    ],
++    cache_entries = {
++        "UA_NAMESPACE_ZERO": "REDUCED",
++        "UA_ENABLE_HISTORIZING": "ON",
++        "UA_ENABLE_DISCOVERY_MULTICAST": "OFF",
++        "UA_ENABLE_MQTT": "OFF",
++        "UA_ENABLE_ENCRYPTION": "OFF",
++    },
++    env = {
++        "CMAKE_BUILD_TYPE": "Release",
++        "CMAKE_BUILD_PARALLEL_LEVEL": "4",
++    },
++    lib_source = ":srcs",
++    out_static_libs = [
++        "libopen62541.a"
++    ]
 +)
 \ No newline at end of file
